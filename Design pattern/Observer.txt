@@ -1,0 +1,60 @@
+@startuml
+
+  
+  interface ProgressListener{
+    onProgress(progress : Progress ) : void
+  }
+  
+  class ContributionInstaller{
+    - platform : Platform
+    - signatureVerifier : SignatureVerifier
+    + ContributionInstaller(platform : Platform ,signatureVerifier : SignatureVerifier )
+    + updateIndex(progressListener  ProgressListener ) : void    
+    + install(lib : ContributedLibrary ,progressListener : ProgressListener ) : List
+    + remove(contributedPlatform : ContributedPlatform) : List
+  }
+  
+  class LibraryInstaller{
+    - platform : Platform
+    - signatureVerifier : GPGDetachedSignatureVerifier
+    + LibraryInstaller(platform : Platform ,signatureVerifier : GPGDetachedSignatureVerifier ) 
+    + install(lib : ContributedLibrary ,progressListener : ProgressListener ) : List
+    + performInstall(lib : ContributedLibrary , progressListener : ProgressListener ,progress : MultiStepProgress ) : void
+    + updateIndex(progressListener  ProgressListener ) : void    
+    + remove(lib : ContributedLibrary,progressListener : ProgressListener) : void
+    + rescanLibraryIndex(progress : ultiStepProgress ,progressListener : ProgressListener) : void
+  }
+  
+  class ConsoleProgressListener{
+    - lastStatus : String
+    - lastProgress : Double
+    + onProgress(progress : Progress) : void
+  }
+  
+  class Base{
+    - contributionInstaller: ContributionInstaller 
+    + Base(args : String[])
+  }
+  
+  class NoopProgressListener{
+    + onProgress(progress : Progress) : void
+  }
+  
+  class DownloadableContributionsDownloader{
+    - stagingFolder : File 
+    + DownloadableContributionsDownloader(File : _stagingFolder)
+    + download(progressListener : ProgressListener ) : File
+    + downloadIndexAndSignature(progressListener : ProgressListener) : void
+  }
+  Base o--> ContributionInstaller
+  Base o--> LibraryInstaller
+  NoopProgressListener ..|> ProgressListener
+  ConsoleProgressListener ..|> ProgressListener
+  ContributionInstaller ..> ProgressListener
+  ContributionInstaller ..> DownloadableContributionsDownloader
+  LibraryInstaller ..> DownloadableContributionsDownloader
+  LibraryInstaller ..> ProgressListener
+  DownloadableContributionsDownloader ..> ProgressListener
+  Base ..> ConsoleProgressListener
+
+@enduml
