@@ -1,0 +1,129 @@
+@startuml facade
+
+Editor <-- Base
+Editor ..> EditorHeader
+Editor ..> EditorLineStatus
+Editor ..> EditorStatus
+Editor ..> EditorTab
+Editor ..> EditorConsole
+
+
+
+class Base{
+    -commandLine : boolean
+    -libraryInstaller : LibraryInstaller
+    -contributionInstaller : ContributionInstaller
+    ...
+    +main(String args[]) : void
+    +Base(String args[])
+    #storeSketches() : void
+    -storeSketchLocation(Editor editor, String index) : void
+    #handleActivated(Editor whichEditor) : void
+    +handleOpen(File file) : Editor
+    +handleOpen(File file, boolean untitled) : Editor
+    #handleOpen(File file, int[] location, boolean untitled) : Editor
+    #Editor handleOpen(File file, int[] storedLocation, int[] defaultLocation, boolean storeOpenedSketches, boolean untitled) : Editor
+    +handleClose(Editor editor) : boolean
+    +handleQuit() : boolean
+    #handleQuitEach() : boolean
+    +rebuildSketchbookMenus() : void
+    #rebuildToolbarMenu(JMenu menu) : void
+    -getSortedLibraries() : void
+    ...()
+
+}
+
+class Editor{
+    -recentSketchesMenu : JMenu
+    -programmersMenu : JMenu
+    ...
+    +Editor(Base ibase, File file, int[] storedLocation, int[] defaultLocation, Platform platform)
+    ...()
+}
+
+class EditorHeader{
+    editor : Editor
+    tabLeft[] : int
+    tabRight[] : int
+    ...
+    +EditorHeader(Editor eddie)
+    +addNotify() : void
+    +actions() : Actions
+    +paintComponent(Graphics screen) : void
+    +rebuild() : void
+    +rebuildMenu() : void
+    +getPreferredSize() : Dimension
+    +getMinimumSize() : Dimension
+    +getMaximumSize() : Dimension
+}
+
+class EditorLineStatus{
+    start : int
+    name : String
+    port : String
+    ...
+    +EditorLineStatus()
+    +actions() : Actions
+    +paintComponent(Graphics screen) : void
+    +setBoardName(String name) : void
+    +setPort(String port) : void
+    +getPreferredSize() : Dimension
+    +getMinimumSize() : Dimension
+    +getMaximumSize() : Dimension
+    +updateBoardAndPort() : void
+
+
+}
+class EditorStatus{
+    - {static}NOTICE : int
+    - {static}ERR :int
+    - {static}NO_MESSAGE : String
+    ...
+    +EditorStatus(Editor editor)
+    +clearState() : void
+    -changeState(int newMode) : void
+    +notice(String message) : void
+    +error(String message) : void
+    +edit(String message, String dflt) : void
+    -unedit() : void
+    +progress(String message) : void
+    ...()
+
+
+
+
+
+}
+class EditorTab{
+    # editor:Editor
+    # textarea:SketchTextArea
+    # scrollPane:RTextScrollPane
+    # file:SketchFile
+    # modified:boolean
+    ...
+    +EditorTab(Editor editor, SketchFile file, String contents)
+    -createDocument(String contents) : RSyntaxDocument
+    -createScrollPane(SketchTextArea textArea) : RTextScrollPane
+    -createTextArea(RSyntaxDocument document) : SketchTextArea
+    -configurePopupMenu(final SketchTextArea textarea) : void
+    ...()
+}
+
+
+
+class EditorConsole{
+    - {static}out : ConsoleOutputStream
+    - {static}err : ConsoleOutputStream
+    - startOfLine : int
+    - insertPosition : int
+    ...
+    +EditorConsole(Base base)
+    +setCurrentEditorConsole(EditorConsole console) : void
+    +applyPreferences() : void
+    +clear() : void
+    +scrollDown() : void
+    +isEmpty() : boolean
+    +insertString(String str, SimpleAttributeSet attributes) : void
+    +getText() : String
+
+}

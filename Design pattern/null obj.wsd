@@ -1,0 +1,34 @@
+@startuml null obj
+ContributionsSelfCheck ..> ProgressListener : use
+ConsoleProgressListener ..|> ProgressListener
+NoopProgressListener ..|> ProgressListener
+
+
+    class ContributionsSelfCheck{
+        -contributionInstaller : ContributionInstaller
+        -libraryInstaller : LibraryInstaller
+        ...
+        +ContributionsSelfCheck(...)
+        +run()
+        -updateLibrariesIndex()
+        -updateContributionIndex()
+        ..()
+
+
+    }
+
+    class ConsoleProgressListener{
+        -lastStatus : String
+        -lastProgres : double
+
+        +onProcess(Progress progress) void
+    }
+
+
+    interface ProgressListener{
+        onProgress(Progress progress) void 
+    }
+
+    class NoopProgressListener{
+        +onProgress(Progress progress void
+    }

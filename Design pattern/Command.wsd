@@ -1,0 +1,117 @@
+@startuml command
+
+Editor <-- Base
+Tool <|.. AStyle
+Tool <|.. FixEncoding
+Tool <|.. Mangler
+Tool <|.. Archiver
+JMenu --> Tool
+
+Editor ..> Tool
+Editor ..> JMenu
+
+Editor <-- AStyle
+Editor <-- FixEncoding
+Editor <-- Mangler
+Editor <-- Archiver
+
+
+
+
+class Base{
+    -commandLine : boolean
+    -libraryInstaller : LibraryInstaller
+    -contributionInstaller : ContributionInstaller
+    editors : Editor[]
+    -boardsCustomMenus : JMenup[]
+    ...
+    +main(String args[]) : void
+    +Base(String args[])
+    #storeSketches() : void
+    -storeSketchLocation(Editor editor, String index) : void
+    #handleActivated(Editor whichEditor) : void
+    +handleOpen(File file) : Editor
+    +handleOpen(File file, boolean untitled) : Editor
+    #handleOpen(File file, int[] location, boolean untitled) : Editor
+    #Editor handleOpen(File file, int[] storedLocation, int[] defaultLocation, boolean storeOpenedSketches, boolean untitled) : Editor
+    +handleClose(Editor editor) : boolean
+    +handleQuit() : boolean
+    #handleQuitEach() : boolean
+    +rebuildSketchbookMenus() : void
+    #rebuildToolbarMenu(JMenu menu) : void
+    -getSortedLibraries() : void
+    ...()
+
+}
+
+class Editor{
+    -recentSketchesMenu : JMenu
+    -programmersMenu : JMenu
+    -internalToolCache : Map<String, Tool>
+    ...
+    +Editor(Base ibase, File file, int[] storedLocation, int[] defaultLocation, Platform platform)
+    -addInternalTools(JMenu menu) : void
+    -handleSave(boolean immediately) : boolean
+    -handleSave2() : boolean
+    ...()
+}
+
+interface Tool{
+    init(Editor editor) : void
+    run() : void
+    getMenuTitle() : String
+    
+}
+
+class FixEncoding{
+    editor : Editor
+    +getMenuTitle() : String
+    +init(Editor editor) : void
+    +run() : void
+    #loadWithLocalEncoding(File file) : String
+}
+
+class Archiver{
+    editor : Editor
+    useDate : boolean
+    digits : int
+    ...
+    +getMenuTitle() : String
+    +init(Editor editor) : void
+    +run() : void
+    +buildZip(File dir, String sofar,ZipOutputStream zos) : void
+}
+
+class Mangler{
+    editor : Editor
+    +getMenuTitle() : String
+    +init(Editor editor) : void
+    +run() : void
+    #mangleSelection() : void
+}
+
+class AStyle{
+    -{static}FORMATTER_CONF : String
+    -aStyleInterface : AStyleInterface
+    -formatterConfiguration : String
+    -editor : Editor
+
+    +AStyle()
+    +getMenuTitle() : String
+    +init(Editor editor) : void
+    +run() : void
+
+}
+
+class JMenu{
+    -{static}uiClassID : String
+    -popupMenu : JPopupMenu
+    -menuChangeListener : ChangeListener
+    ...
+    +JMenu()
+    +updateUI() : void
+    +remove(JMenuItem item) : void
+    #getPopupMenuOrigin() : Point
+
+
+}
